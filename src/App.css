@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
+  transition: background-color 0.3s ease;
+}
+
+.dark body {
+  background-color: #111827;
+}
+
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Add this to your main CSS file */
+@keyframes bounceSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-18px);
+  }
+}
+.animate-bounce-slow {
+  animation: bounceSlow 2.2s infinite cubic-bezier(0.6, 0.05, 0.2, 0.95);
+}
+
+@keyframes growSlow {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+.animate-grow-slow {
+  animation: growSlow 2s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
+}
+
+/* NAV LINKS */
+/* Remove @apply rules and use these class names directly in your JSX:
+   nav-link: border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
+   active-link: border-primary text-gray-900 dark:text-white inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
+   mobile-link: block pl-3 pr-4 py-2 border-l-4 text-base font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300
+*/
+
+/* HAMBURGER MENU */
+.hamburger {
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  transition: all 0.25s;
+  position: relative;
+}
+
+.hamburger-top,
+.hamburger-middle,
+.hamburger-bottom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background: #4F46E5;
+  transform: rotate(0);
+  transition: all 0.5s;
+}
+
+.dark .hamburger-top,
+.dark .hamburger-middle,
+.dark .hamburger-bottom {
+  background: #ffffff;
+}
+
+.hamburger-middle {
+  transform: translateY(7px);
+}
+
+.hamburger-bottom {
+  transform: translateY(14px);
+}
+
+.open .hamburger-top {
+  transform: rotate(45deg) translateY(6px) translateX(6px);
+}
+
+.open .hamburger-middle {
+  display: none;
+}
+
+.open .hamburger-bottom {
+  transform: rotate(-45deg) translateY(6px) translateX(-6px);
+}
+
+/* THEME TOGGLE */
+.theme-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background-color: #e5e7eb;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dark .theme-toggle {
+  background-color: #4B5563;
+}
+
+.theme-toggle-handle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.dark .theme-toggle-handle {
+  transform: translateX(20px);
+  background-color: #1F2937;
+}
+
+.theme-toggle-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #6B7280;
+}
+
+.theme-toggle-icon.sun {
+  left: 5px;
+}
+
+.theme-toggle-icon.moon {
+  right: 5px;
+  color: #9CA3AF;
+}
+
+.dark .theme-toggle-icon.sun {
+  color: #9CA3AF;
+}
+
+.dark .theme-toggle-icon.moon {
+  color: #E5E7EB;
+}
+
+
+
+/*#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+*/
