@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CreateProposalModal from '../components/CreateProposalModal'
-import Navbar from '../components/Navbar'
+import { useWallet } from '../web3/hooks'
 import Footer from '../components/Footer'
 
-const Dashboard = ({ isWalletConnected }) => {
+const Dashboard = () => {
   const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const { isConnected, isCorrectNetwork, switchToAvalanche } = useWallet()
 
   // Redirect to home if wallet is not connected
   useEffect(() => {
-    if (!isWalletConnected) {
+    if (!isConnected) {
       navigate('/')
     }
-  }, [isWalletConnected, navigate])
+  }, [isConnected, navigate])
+
+  if (!isConnected) {
+    return null
+  }
 
   return (
     <>
@@ -26,6 +31,36 @@ const Dashboard = ({ isWalletConnected }) => {
           <h1 className="text-3xl font-bold text-indigo-700 dark:text-indigo-300 mb-6">
             Dashboard
           </h1>
+          
+          {/* Network Warning */}
+          {!isCorrectNetwork && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <i className="fas fa-exclamation-triangle text-yellow-400"></i>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-yellow-800">
+                    Wrong Network
+                  </h3>
+                  <div className="mt-2 text-sm text-yellow-700">
+                    <p>
+                      Please switch to Avalanche network to use BallotDAO.
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <button
+                      onClick={switchToAvalanche}
+                      className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                    >
+                      Switch to Avalanche
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="grid md:grid-cols-2 gap-8">
             {/* Create New Proposal */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 flex flex-col items-center">
@@ -38,6 +73,7 @@ const Dashboard = ({ isWalletConnected }) => {
               <button
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md font-medium transition"
                 onClick={() => setIsModalOpen(true)}
+                disabled={!isCorrectNetwork}
               >
                 Create Proposal
               </button>
@@ -82,6 +118,7 @@ const Dashboard = ({ isWalletConnected }) => {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     </>
   )

@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer.jsx';
 import avaxImage from '../assets/avax.png';
-import ConnectWalletModal from '../components/ConnectWalletModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNetworkWired } from '@fortawesome/free-solid-svg-icons';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const About = () => {
-  const [walletModalOpen, setWalletModalOpen] = useState(false);
-
   return (
     <div>
-      <ConnectWalletModal isOpen={walletModalOpen} onClose={() => setWalletModalOpen(false)} />
       {/* Hero Section */}
       <div className="relative bg-gray-900 overflow-hidden transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -300,11 +297,14 @@ const About = () => {
                 Connect your wallet and start voting on proposals or submit your own ideas to shape the future of BallotDAO.
               </p>
               <div className="mt-8 flex justify-center">
-                <div className="inline-flex rounded-md shadow">
-                  <button className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
-                  onClick={() => setWalletModalOpen(true)}>
-                    <i className="fas fa-wallet mr-2"></i> Connect Wallet
-                  </button>
+                <div className="rounded-md shadow">
+                  <ConnectButton
+                    showBalance={false}
+                    chainStatus="icon"
+                    accountStatus="address"
+                    label="Connect Wallet"
+                    className="!bg-white !text-indigo-600 !rounded-md !px-8 !py-3 !font-medium !text-base !hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
+                  />
                 </div>
               </div>
             </div>

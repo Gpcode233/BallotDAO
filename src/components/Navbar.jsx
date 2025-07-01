@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import ConnectWalletModal from './ConnectWalletModal';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount } from 'wagmi';
 
-const Navbar = ({ setIsWalletConnected, isWalletConnected }) => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() =>
     localStorage.getItem('theme') === 'dark' ||
     (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
   );
-  const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const { isConnected } = useAccount();
 
   const getNavLinks = () => {
-    if (isWalletConnected) {
+    if (isConnected) {
       return [
         { name: 'Dashboard', to: '/dashboard' },
         { name: 'Proposals', to: '/proposals' },
@@ -31,11 +32,6 @@ const Navbar = ({ setIsWalletConnected, isWalletConnected }) => {
 
   return (
     <nav className="bg-[#232b3a] shadow-sm sticky top-0 z-50 dark:bg-[#232b3a] transition-colors duration-300">
-      <ConnectWalletModal
-        isOpen={walletModalOpen}
-        onClose={() => setWalletModalOpen(false)}
-        setIsWalletConnected={setIsWalletConnected}
-      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -74,7 +70,7 @@ const Navbar = ({ setIsWalletConnected, isWalletConnected }) => {
               <i className={`fas fa-sun theme-toggle-icon sun ${darkMode ? 'hidden' : ''}`}></i>
               <i className={`fas fa-moon theme-toggle-icon moon ${darkMode ? '' : 'hidden'}`}></i>
             </button>
-            {isWalletConnected ? (
+            {isConnected ? (
               <NavLink
                 to="/profile"
                 className="bg-[#6366f1] hover:bg-[#4f46e5] text-white px-6 py-2 rounded-md text-sm font-medium flex items-center justify-center transition duration-150 ease-in-out"
@@ -82,12 +78,7 @@ const Navbar = ({ setIsWalletConnected, isWalletConnected }) => {
                 <i className="fas fa-user mr-2"></i> Profile
               </NavLink>
             ) : (
-              <button
-                className="bg-[#6366f1] hover:bg-[#4f46e5] text-white px-6 py-2 rounded-md text-sm font-medium flex items-center justify-center transition duration-150 ease-in-out"
-                onClick={() => setWalletModalOpen(true)}
-              >
-                <i className="fas fa-wallet mr-2"></i> Connect Wallet
-              </button>
+              <ConnectButton />
             )}
           </div>
           <div className="-mr-2 flex items-center sm:hidden">
@@ -133,7 +124,7 @@ const Navbar = ({ setIsWalletConnected, isWalletConnected }) => {
               <i className={`fas fa-sun theme-toggle-icon sun ${darkMode ? 'hidden' : ''}`}></i>
               <i className={`fas fa-moon theme-toggle-icon moon ${darkMode ? '' : 'hidden'}`}></i>
             </button>
-            {isWalletConnected ? (
+            {isConnected ? (
               <NavLink
                 to="/profile"
                 className="bg-[#6366f1] hover:bg-[#4f46e5] text-white px-6 py-2 rounded-md text-sm font-medium flex items-center justify-center transition duration-150 ease-in-out"
@@ -142,15 +133,9 @@ const Navbar = ({ setIsWalletConnected, isWalletConnected }) => {
                 <i className="fas fa-user mr-2"></i> Profile
               </NavLink>
             ) : (
-              <button
-                className="bg-[#6366f1] hover:bg-[#4f46e5] text-white px-6 py-2 rounded-md text-sm font-medium flex items-center justify-center transition duration-150 ease-in-out"
-                onClick={() => {
-                  setWalletModalOpen(true);
-                  setIsMenuOpen(false);
-                }}
-              >
-                <i className="fas fa-wallet mr-2"></i> Connect Wallet
-              </button>
+              <div onClick={() => setIsMenuOpen(false)}>
+                <ConnectButton />
+              </div>
             )}
           </div>
         </div>

@@ -1,28 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useWallet } from '../web3/hooks';
+import Footer from '../components/Footer';
 
-const Profile = ({ isWalletConnected }) => {
+const Profile = () => {
   const navigate = useNavigate();
-  const [address, setAddress] = useState('');
+  const { isConnected, address, balance, isCorrectNetwork } = useWallet();
 
   useEffect(() => {
-    if (!isWalletConnected) {
+    if (!isConnected) {
       navigate('/');
-      return;
     }
+  }, [isConnected, navigate]);
 
-    // Get the connected wallet address
-    const getAddress = async () => {
-      if (window.ethereum) {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        if (accounts.length > 0) {
-          setAddress(accounts[0]);
-        }
-      }
-    };
-
-    getAddress();
-  }, [isWalletConnected, navigate]);
+  if (!isConnected) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10 px-4">
@@ -37,8 +30,34 @@ const Profile = ({ isWalletConnected }) => {
               <p className="text-sm text-gray-500 dark:text-gray-400 break-all">
                 {address}
               </p>
+              {balance && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Balance: {parseFloat(balance.formatted).toFixed(4)} {balance.symbol}
+                </p>
+              )}
             </div>
           </div>
+
+          {/* Network Status */}
+          {!isCorrectNetwork && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <i className="fas fa-exclamation-triangle text-yellow-400"></i>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-yellow-800">
+                    Wrong Network
+                  </h3>
+                  <div className="mt-2 text-sm text-yellow-700">
+                    <p>
+                      Please switch to Avalanche network to use BallotDAO.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="grid md:grid-cols-2 gap-8 mt-8">
             <div className="space-y-4">
@@ -68,6 +87,7 @@ const Profile = ({ isWalletConnected }) => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

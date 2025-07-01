@@ -1,15 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Footer from '../components/Footer';
-import ConnectWalletModal from '../components/ConnectWalletModal';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import voteBoxImage from '../assets/3d-blue-vote-box-ballot-600nw-2402267639-removebg-preview.png';
 
 function Home() {
-  const [walletModalOpen, setWalletModalOpen] = useState(false);
-
   return (
     <div className="bg-[#1e2533] text-white">
       {/* Hero Section */}
-      <ConnectWalletModal isOpen={walletModalOpen} onClose={() => setWalletModalOpen(false)} />
       <div className="relative bg-[#1e2533] overflow-hidden transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           <div className="relative z-10 pb-8 bg-[#1e2533] sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
@@ -26,16 +23,17 @@ function Home() {
                 </p>
                 <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                   <div className="rounded-md shadow">
-                    <button
-                      onClick={() => setWalletModalOpen(true)}
-                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-green-400 hover:from-indigo-600 hover:to-green-500 hover:scale-105 transform transition-all duration-300 md:py-4 md:text-lg md:px-10"
-                    >
-                      Start Voting
-                    </button>
+                    <ConnectButton
+                      showBalance={false}
+                      chainStatus="icon"
+                      accountStatus="address"
+                      label="Start Voting"
+                      className="!w-full !flex !items-center !justify-center !px-32 !py-6 !border !border-transparent !text-2xl !font-bold !rounded-xl !text-white !bg-gradient-to-r !from-indigo-500 !to-green-400 hover:!from-indigo-600 hover:!to-green-500 hover:!scale-105 !transform !transition-all !duration-300 md:!py-8 md:!text-3xl md:!px-16"
+                    />
                   </div>
                   <div className="mt-3 sm:mt-0 sm:ml-3">
                     <a
-                      href="./About.jsx"
+                      href="./about"
                       className="w-full flex items-center justify-center px-8 py-3 border border-gray-700 text-base font-medium rounded-md text-white bg-transparent hover:bg-gray-800 hover:border-gray-500 transform transition-all duration-300 md:py-4 md:text-lg md:px-10"
                     >
                       Learn More
@@ -296,13 +294,13 @@ function Home() {
           </h2>
           <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
             <div className="inline-flex rounded-md shadow">
-              <button
-                href="#"
-                className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-[#6366f1] bg-white hover:bg-gray-100 transition-all duration-300 hover:shadow-lg hover:scale-105"
-                onClick={() => setWalletModalOpen(true)}
-              >
-                <i className="fas fa-wallet mr-2" /> Connect Wallet
-              </button>
+              <ConnectButton
+                showBalance={false}
+                chainStatus="icon"
+                accountStatus="address"
+                label="Connect Wallet"
+                className="!inline-flex !items-center !justify-center !px-5 !py-3 !border !border-transparent !text-base !font-medium !rounded-md !text-[#6366f1] !bg-white hover:!bg-gray-100 !transition-all !duration-300 hover:!shadow-lg hover:!scale-105"
+              />
             </div>
             <div className="ml-3 inline-flex rounded-md shadow">
               <a
