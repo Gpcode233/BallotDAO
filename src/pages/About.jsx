@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer.jsx';
-import avaxImage from '../assets/avax.png';
+import umiImage from '../assets/umi.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const About = () => {
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
+
   return (
     <div>
       {/* Hero Section */}
@@ -85,12 +87,12 @@ const About = () => {
         </div>
       </div>
 
-      {/* Why Avalanche Section */}
+      {/* Why Umi Section */}
       <div className="bg-white dark:bg-gray-900 py-16 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:text-center">
             <h2 className="text-3xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400 sm:text-4xl">
-              Why We Chose Avalanche
+              Why We Chose Umi
             </h2>
             <p className="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-400 lg:mx-auto">
               Building on the most scalable, eco-friendly blockchain ecosystem
@@ -101,9 +103,9 @@ const About = () => {
             <div className="flex flex-col md:flex-row items-center">
               <div className="md:w-1/2">
                 <div className="flex items-center">
-                  <img src={avaxImage} alt="Avalanche Logo" className="h-16 w-16 rounded-full object-cover" />
+                  <img src={umiImage} alt="Umi Logo" className="h-16 w-16 rounded-full object-cover" />
                   <div className="ml-4">
-                    <h3 className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">Avalanche Network</h3>
+                    <h3 className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">Umi Network</h3>
                     <p className="text-gray-500 dark:text-gray-400">Sub-second finality • EVM compatible • Carbon neutral</p>
                   </div>
                 </div>
@@ -118,7 +120,7 @@ const About = () => {
                     <div className="ml-4">
                       <h4 className="text-lg font-medium text-indigo-700 dark:text-indigo-300">Lightning Fast</h4>
                       <p className="mt-1 text-gray-500 dark:text-gray-400">
-                        Avalanche's unique consensus protocol enables sub-second transaction finality,
+                        Umi's unique consensus protocol enables sub-second transaction finality,
                         making voting results available almost instantly.
                       </p>
                     </div>
@@ -133,7 +135,7 @@ const About = () => {
                     <div className="ml-4">
                       <h4 className="text-lg font-medium text-indigo-700 dark:text-indigo-300">Eco-Friendly</h4>
                       <p className="mt-1 text-gray-500 dark:text-gray-400">
-                        Unlike proof-of-work chains, Avalanche uses a sustainable consensus mechanism
+                        Unlike proof-of-work chains, Umi uses a sustainable consensus mechanism
                         that consumes minimal energy while maintaining security.
                       </p>
                     </div>

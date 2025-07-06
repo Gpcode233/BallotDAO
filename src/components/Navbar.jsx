@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
+import { Around } from '@theme-toggles/react';
+import '@theme-toggles/react/css/Around.css';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,6 +12,31 @@ const Navbar = () => {
     (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
   );
   const { isConnected } = useAccount();
+
+  // Apply theme to document and persist to localStorage
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
+  // Initialize theme on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    setDarkMode((prev) => !prev);
+  };
 
   const getNavLinks = () => {
     if (isConnected) {
@@ -31,20 +58,22 @@ const Navbar = () => {
   const navLinks = getNavLinks();
 
   return (
-    <nav className="bg-[#232b3a] shadow-sm sticky top-0 z-50 dark:bg-[#232b3a] transition-colors duration-300">
+    <nav className="glass-navbar shadow-sm sticky top-0 z-50 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
-              {/* Blue circle logo */}
-              <div className="w-10 h-10 rounded-full bg-[#6366f1] flex items-center justify-center">
-                <i className="fas fa-vote-yea text-white text-xl"></i>
-              </div>
-              <span className="ml-3 text-xl font-bold text-white hidden sm:block">
-                BallotDAO
-              </span>
+        <div className="flex justify-between items-center h-16 w-full">
+          {/* Logo Left */}
+          <div className="flex-shrink-0 flex items-center">
+            <div className="w-10 h-10 rounded-full bg-[#6366f1] flex items-center justify-center">
+              <i className="fas fa-vote-yea text-white text-xl"></i>
             </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+            <span className="ml-3 text-xl font-bold text-white hidden sm:block">
+              BallotDAO
+            </span>
+          </div>
+
+          {/* Nav Links Centered */}
+          <div className="flex-1 flex justify-center">
+            <div className="hidden sm:flex sm:space-x-8">
               {navLinks.map(link => (
                 <NavLink
                   key={link.name}
@@ -62,25 +91,25 @@ const Navbar = () => {
               ))}
             </div>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+
+          {/* Theme Toggle + Connect Wallet Right */}
+          <div className="hidden sm:flex sm:items-center space-x-2">
             <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-[#2d3446] text-gray-300 hover:text-white focus:outline-none"
+              style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, background: 'none', border: 'none', boxShadow: 'none', overflow: 'visible' }}
+              aria-label="Toggle theme"
+              title="Toggle theme"
+              onClick={toggleTheme}
             >
-              <i className={`fas fa-sun theme-toggle-icon sun ${darkMode ? 'hidden' : ''}`}></i>
-              <i className={`fas fa-moon theme-toggle-icon moon ${darkMode ? '' : 'hidden'}`}></i>
+              <Around
+                toggled={darkMode}
+                duration={750}
+                style={{ color: '#fbbf24', width: 52, height: 52, display: 'block' }}
+              />
             </button>
-            {isConnected ? (
-              <NavLink
-                to="/profile"
-                className="bg-[#6366f1] hover:bg-[#4f46e5] text-white px-6 py-2 rounded-md text-sm font-medium flex items-center justify-center transition duration-150 ease-in-out"
-              >
-                <i className="fas fa-user mr-2"></i> Profile
-              </NavLink>
-            ) : (
-              <ConnectButton />
-            )}
+            <ConnectButton />
           </div>
+
+          {/* Mobile menu button */}
           <div className="-mr-2 flex items-center sm:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -98,7 +127,7 @@ const Navbar = () => {
       </div>
 
       {/* Mobile menu */}
-      <div className={`${isMenuOpen ? 'block' : 'hidden'} sm:hidden bg-[#232b3a] border-t border-gray-200 dark:border-gray-700`}>
+      <div className={`${isMenuOpen ? 'block' : 'hidden'} sm:hidden bg-gray-800 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700`}>
         <div className="pt-2 pb-3 space-y-1">
           {navLinks.map(link => (
             <NavLink
@@ -117,17 +146,23 @@ const Navbar = () => {
             </NavLink>
           ))}
           <div className="px-4 py-2 flex items-center justify-between">
+            {/* Theme Toggle Button for Mobile */}
             <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-[#2d3446] text-gray-300 hover:text-white focus:outline-none"
+              style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, background: 'none', border: 'none', boxShadow: 'none', overflow: 'visible' }}
+              aria-label="Toggle theme"
+              title="Toggle theme"
+              onClick={toggleTheme}
             >
-              <i className={`fas fa-sun theme-toggle-icon sun ${darkMode ? 'hidden' : ''}`}></i>
-              <i className={`fas fa-moon theme-toggle-icon moon ${darkMode ? '' : 'hidden'}`}></i>
+              <Around
+                toggled={darkMode}
+                duration={750}
+                style={{ color: '#fbbf24', width: 52, height: 52, display: 'block' }}
+              />
             </button>
             {isConnected ? (
               <NavLink
                 to="/profile"
-                className="bg-[#6366f1] hover:bg-[#4f46e5] text-white px-6 py-2 rounded-md text-sm font-medium flex items-center justify-center transition duration-150 ease-in-out"
+                className="bg-[#6366f1] hover:bg-[#4f46e5] text px-6 py-2 rounded-md text-sm font-medium flex items-center justify-center transition duration-150 ease-in-out"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <i className="fas fa-user mr-2"></i> Profile

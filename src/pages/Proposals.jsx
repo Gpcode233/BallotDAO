@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 function Proposals() {
   const allProposals = [
@@ -134,17 +136,17 @@ function Proposals() {
 
 
   return (
-    <div className="min-h-screen bg-[#1a202c] text-white">
+    <div className="min-h-screen bg-main text-main">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div className="flex items-center mb-4 md:mb-0">
-            <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center mr-4">
-              <i className="fas fa-clipboard-list text-indigo-500 text-2xl floating-icon animate-grow-slow" />
+            <div className="w-12 h-12 rounded-full bg-[var(--brand-indigo)]/10 flex items-center justify-center mr-4">
+              <i className="fas fa-clipboard-list" style={{ color: 'var(--brand-indigo)', fontSize: 28 }} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Active Proposals</h1>
-              <p className="text-gray-500 dark:text-gray-400">Participate in governance decisions</p>
+              <h1 className="text-3xl font-bold" style={{ color: 'var(--brand-indigo)' }}>Active Proposals</h1>
+              <p className="text-muted">Participate in governance decisions</p>
             </div>
           </div>
 
@@ -152,20 +154,20 @@ function Proposals() {
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <div className="search-container relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <i className="fas fa-search text-gray-400" />
+                <i className="fas fa-search text-muted" />
               </span>
               <input
                 type="text"
                 placeholder="Search proposals..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="search-input w-full sm:w-64 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary dark:text-white"
+                className="search-input w-full sm:w-64 bg-card border border-main rounded-md py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-indigo)] focus:border-[var(--brand-indigo)] text-main"
               />
             </div>
             <select
               value={filter}
               onChange={e => setFilter(e.target.value)}
-              className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary dark:text-white"
+              className="bg-card border border-main rounded-md py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-indigo)] focus:border-[var(--brand-indigo)] text-main"
             >
               <option>All Proposals</option>
               <option>Active</option>
@@ -179,45 +181,46 @@ function Proposals() {
         {/* Proposals Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProposals.length === 0 ? (
-            <div className="col-span-full text-center text-gray-400 py-12">
+            <div className="col-span-full text-center text-muted py-12">
               No proposals found.
             </div>
           ) : (
             filteredProposals.map((proposal) => (
-              <div key={proposal.id} className="proposal-card bg-white dark:bg-gray-700 rounded-lg overflow-hidden p-6">
+              <div key={proposal.id} className="proposal-card bg-card rounded-lg overflow-hidden p-6 border border-main">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClasses(proposal.status)}`}>
                       {proposal.status}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{proposal.endDate}</div>
+                  <div className="text-xs text-muted">{proposal.endDate}</div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{proposal.title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">{proposal.description}</p>
-                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--brand-indigo)' }}>{proposal.title}</h3>
+                <p className="text-muted text-sm mb-4">{proposal.description}</p>
+                <div className="flex items-center text-sm text-muted mb-4">
                   <i className="fas fa-user-circle mr-1" />
                   <span className="truncate">{proposal.proposer}</span>
                 </div>
-                <div className="mb-6">
-                  <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
-                    <div className="flex items-center">
-                      <i className={`fas fa-thumbs-up ${proposal.yesPercentage > 0 ? 'text-green-500' : 'text-gray-400'} mr-1`} />
-                      <span>{proposal.yesPercentage}% Yes</span>
-                    </div>
-                    <div className="flex items-center">
-                      <i className={`fas fa-thumbs-down ${proposal.noPercentage > 0 ? 'text-red-500' : 'text-gray-400'} mr-1`} />
-                      <span>{proposal.noPercentage}% No</span>
-                    </div>
+                {/* Progress Bar */}
+                <div className="mb-4">
+                  <div className="flex justify-between text-xs text-muted mb-1">
+                    <span>Yes: {proposal.yesPercentage}%</span>
+                    <span>No: {proposal.noPercentage}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-600">
+                  <div className="w-full bg-accent rounded-full h-2.5 flex">
                     <div
-                      className={`${getProgressBarColor(proposal.status)} h-2 rounded-full`}
+                      className="bg-[var(--brand-green)] h-2.5 rounded-l-full"
                       style={{ width: `${proposal.yesPercentage}%` }}
+                    />
+                    <div
+                      className="bg-[var(--brand-indigo)] h-2.5 rounded-r-full"
+                      style={{ width: `${proposal.noPercentage}%`, opacity: 0.3 }}
                     />
                   </div>
                 </div>
-                <button className={`w-full px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center transition duration-150 ease-in-out ${proposal.buttonClass}`}>
+                <button
+                  className="mt-2 w-full bg-card border border-main hover:bg-accent text-main px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center transition-all duration-300"
+                >
                   <i className={`${proposal.iconClass} mr-2`} /> {proposal.buttonText}
                 </button>
               </div>
@@ -226,49 +229,17 @@ function Proposals() {
         </div>
 
         {/* Pagination */}
-        <div className="mt-10 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-6">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <a href="#" className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-              Previous
-            </a>
-            <a href="#" className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-              Next
-            </a>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <div className="mt-10 flex flex-col items-center justify-center border-t border-main pt-6">
+          <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
             <div>
-              <p className="text-sm text-gray-700 dark:text-gray-400">
+              <p className="text-sm text-muted">
                 Showing <span className="font-medium">1</span> to <span className="font-medium">6</span> of <span className="font-medium">24</span> proposals
               </p>
             </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                <a href="#" className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600">
-                  <span className="sr-only">Previous</span>
-                  <i className="fas fa-chevron-left" />
-                </a>
-                <a href="#" aria-current="page" className="z-10 bg-primary border-primary text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                  1
-                </a>
-                <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600">
-                  2
-                </a>
-                <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600">
-                  3
-                </a>
-                <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-400">
-                  ...
-                </span>
-                <a href="#" className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600">
-                  8
-                </a>
-                <a href="#" className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600">
-                  <span className="sr-only">Next</span>
-                  <i className="fas fa-chevron-right" />
-                </a>
-              </nav>
-            </div>
           </div>
+          <Stack spacing={2}>
+            <Pagination count={8} variant="outlined" shape="rounded" color="primary" />
+          </Stack>
         </div>
       </main>
       <Footer />

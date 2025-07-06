@@ -9,6 +9,21 @@ import './index.css'
 import App from './App.jsx'
 import { config } from './web3/rainbowkit-config.js'
 
+// Initialize theme before React app starts
+const initializeTheme = () => {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+};
+
+// Run theme initialization
+initializeTheme();
+
 const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')).render(

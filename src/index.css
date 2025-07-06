@@ -1,6 +1,162 @@
 @import "tailwindcss";
 @import "tailwindcss/utilities";
+
+/* Theme color variables */
+:root {
+  --bg-main: #f3f4f6;
+  --bg-card: #fff;
+  --bg-accent: #f0f4ff;
+  --text-main: #23272f;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --shadow: 0 1px 4px 0 rgba(60,60,60,0.04);
+  /* Brand accent colors */
+  --brand-indigo: #6366f1;
+  --brand-green: #10b981;
+}
+.dark :root, .dark body {
+  --bg-main: #181c23;
+  --bg-card: #232b3a;
+  --bg-accent: #232b3a;
+  --text-main: #f3f4f6;
+  --text-muted: #a1a1aa;
+  --border: #232b3a;
+  --shadow: 0 1px 4px 0 rgba(0,0,0,0.18);
+  --brand-indigo: #6366f1;
+  --brand-green: #10b981;
+}
+
+body {
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.3s, color 0.3s;
+}
+
+.text-main {
+  color: var(--text-main);
+}
+.text-muted {
+  color: var(--text-muted);
+}
+.bg-main {
+  background: var(--bg-main);
+}
+.bg-card {
+  background: var(--bg-card);
+}
+.bg-accent {
+  background: var(--bg-accent);
+}
+.border-main {
+  border-color: var(--border);
+}
+.shadow-main {
+  box-shadow: var(--shadow);
+}
+
+/* Glassmorphism utility for navbar */
+.glass-navbar {
+  background: rgba(36, 41, 54, 0.7); /* fallback for dark */
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+:root .glass-navbar {
+  background: rgba(255,255,255,0.7); /* fallback for light */
+}
+.dark .glass-navbar {
+  background: rgba(36, 41, 54, 0.7);
+}
+
+/* Smooth theme transitions */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
 /* Custom styles */
+
+/* Custom animations */
+@keyframes grow-slow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-grow-slow {
+  animation: grow-slow 3s ease-in-out infinite;
+}
+
+.floating-icon {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Feature icon styling */
+.feature-icon {
+  @apply w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center;
+}
+
+/* Card hover effects */
+.card-hover:hover {
+  @apply transform -translate-y-1 shadow-lg;
+}
+
+/* Hamburger menu animations */
+.hamburger {
+  @apply w-6 h-6 flex flex-col justify-center items-center;
+}
+
+.hamburger-top,
+.hamburger-middle,
+.hamburger-bottom {
+  @apply w-6 h-0.5 bg-current transition-all duration-300;
+}
+
+.hamburger-top {
+  @apply transform -translate-y-1;
+}
+
+.hamburger-bottom {
+  @apply transform translate-y-1;
+}
+
+/* Theme toggle icon animations */
+.theme-toggle-icon {
+  @apply transition-all duration-300;
+}
+
+.theme-toggle-icon.sun {
+  @apply transform rotate-0;
+}
+
+.theme-toggle-icon.moon {
+  @apply transform rotate-0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
 
 /*:root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

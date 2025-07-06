@@ -51,7 +51,7 @@ const Profile = () => {
                   </h3>
                   <div className="mt-2 text-sm text-yellow-700">
                     <p>
-                      Please switch to Avalanche network to use BallotDAO.
+                      Please switch to Umi network to use BallotDAO.
                     </p>
                   </div>
                 </div>

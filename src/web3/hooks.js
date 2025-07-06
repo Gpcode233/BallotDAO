@@ -1,12 +1,31 @@
 import { useAccount, useChainId } from 'wagmi';
-import { avalanche } from 'wagmi/chains';
 
-// Custom hook for wallet connection state (Wagmi v2 compatible)
+// Umi Devnet network config (official details)
+export const umi = {
+  id: 42069,
+  name: 'Umi Devnet',
+  network: 'umi-devnet',
+  nativeCurrency: {
+    name: 'Ethereum',
+    symbol: 'ETH', // Umi Devnet uses ETH as the symbol
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: { http: ['https://devnet.uminetwork.com'] },
+    public: { http: ['https://devnet.uminetwork.com'] },
+  },
+  blockExplorers: {
+    default: { name: 'Umi Explorer', url: 'https://devnet.explorer.moved.network' },
+  },
+  testnet: true,
+};
+
+// Custom hook for wallet connection state (Umi compatible)
 export const useWallet = () => {
   const { address, isConnected, isConnecting, isDisconnected } = useAccount();
   const chainId = useChainId();
 
-  const isCorrectNetwork = chainId === avalanche.id;
+  const isCorrectNetwork = chainId === umi.id;
 
   return {
     address,
@@ -15,12 +34,12 @@ export const useWallet = () => {
     isDisconnected,
     chainId,
     isCorrectNetwork,
-    // switchToAvalanche: ... (implement with connector if needed)
+    // switchToUmi: ... (implement with connector if needed)
   };
 };
 
-// Hook for checking if user is on Avalanche network
-export const useAvalancheNetwork = () => {
+// Hook for checking if user is on Umi network
+export const useUmiNetwork = () => {
   const chainId = useChainId();
-  return chainId === avalanche.id;
+  return chainId === umi.id;
 };
