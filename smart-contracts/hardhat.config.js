@@ -46,6 +46,14 @@ module.exports = {
       gasPrice: "auto",
       gasMultiplier: 1,
     },
+    umi: {
+      url: "https://devnet.uminetwork.com",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 42069,
+      gas: "auto",
+      gasPrice: "auto",
+      gasMultiplier: 1,
+    },
   },
   etherscan: {
     apiKey: {
