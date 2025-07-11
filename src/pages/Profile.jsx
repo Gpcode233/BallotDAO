@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../web3/hooks';
-import Footer from '../components/Footer';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -87,7 +86,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

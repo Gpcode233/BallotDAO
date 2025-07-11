@@ -2,8 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
-import { Around } from '@theme-toggles/react';
-import '@theme-toggles/react/css/Around.css';
+import NetworkSwitcher from './NetworkSwitcher';
+import { Classic } from '@theme-toggles/react';
+import '@theme-toggles/react/css/Classic.css';
+
+// Theme toggle styles
+const themeToggleClasses = "relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200";
+const themeToggleThumbClasses = "inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,10 +52,9 @@ const Navbar = () => {
         { name: 'About', to: '/about' },
       ];
     }
+    // Only show Home and About when not connected
     return [
       { name: 'Home', to: '/' },
-      { name: 'Proposals', to: '/proposals' },
-      { name: 'Results', to: '/results' },
       { name: 'About', to: '/about' },
     ];
   };
@@ -92,21 +96,38 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Theme Toggle + Connect Wallet Right */}
-          <div className="hidden sm:flex sm:items-center space-x-2">
+          {/* Theme Toggle + Network + Connect Wallet Right */}
+          <div className="hidden sm:flex sm:items-center space-x-3">
+            {/* Theme Toggle */}
             <button
-              style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, background: 'none', border: 'none', boxShadow: 'none', overflow: 'visible' }}
-              aria-label="Toggle theme"
-              title="Toggle theme"
+              type="button"
               onClick={toggleTheme}
+              className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors ${darkMode ? 'bg-indigo-600' : 'bg-gray-200'}`}
+              aria-pressed={darkMode}
+              aria-label="Toggle theme"
             >
-              <Around
-                toggled={darkMode}
-                duration={750}
-                style={{ color: '#fbbf24', width: 52, height: 52, display: 'block' }}
-              />
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-200 ease-in-out ${darkMode ? 'translate-x-6' : 'translate-x-1'}`}
+              >
+                {darkMode ? (
+                  <span className="absolute inset-0 flex h-full w-full items-center justify-center text-yellow-300">
+                    <i className="fas fa-moon text-xs"></i>
+                  </span>
+                ) : (
+                  <span className="absolute inset-0 flex h-full w-full items-center justify-center text-yellow-500">
+                    <i className="fas fa-sun text-xs"></i>
+                  </span>
+                )}
+              </span>
             </button>
-            <ConnectButton />
+            
+            {/* Network Switcher */}
+            <NetworkSwitcher />
+            
+            {/* Connect Wallet Button */}
+            <div className="connect-wallet-btn">
+              <ConnectButton />
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -147,18 +168,15 @@ const Navbar = () => {
           ))}
           <div className="px-4 py-2 flex items-center justify-between">
             {/* Theme Toggle Button for Mobile */}
-            <button
-              style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, background: 'none', border: 'none', boxShadow: 'none', overflow: 'visible' }}
-              aria-label="Toggle theme"
+            <Classic
+              toggled={darkMode}
+              toggle={toggleTheme}
+              duration={750}
+              className="theme-toggle"
+              style={{ color: '#fbbf24', width: 40, height: 40, cursor: 'pointer' }}
               title="Toggle theme"
-              onClick={toggleTheme}
-            >
-              <Around
-                toggled={darkMode}
-                duration={750}
-                style={{ color: '#fbbf24', width: 52, height: 52, display: 'block' }}
-              />
-            </button>
+              aria-label="Toggle theme"
+            />
             {isConnected ? (
               <NavLink
                 to="/profile"

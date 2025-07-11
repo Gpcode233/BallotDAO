@@ -5,7 +5,8 @@
 :root {
   --bg-main: #f3f4f6;
   --bg-card: #fff;
-  --bg-accent: #f0f4ff;
+  --bg-accent: #f8fafc;
+  --bg-stats: #f5f7fa;
   --text-main: #23272f;
   --text-muted: #6b7280;
   --border: #e5e7eb;
@@ -13,17 +14,20 @@
   /* Brand accent colors */
   --brand-indigo: #6366f1;
   --brand-green: #10b981;
+  --features-bg: #e2e8f0;  /* Darker shade for light mode */
 }
 .dark :root, .dark body {
   --bg-main: #181c23;
-  --bg-card: #232b3a;
-  --bg-accent: #232b3a;
+  --bg-card: #263043;
+  --bg-accent: #181c23;
+  --bg-stats: #222b36;
   --text-main: #f3f4f6;
   --text-muted: #a1a1aa;
   --border: #232b3a;
   --shadow: 0 1px 4px 0 rgba(0,0,0,0.18);
   --brand-indigo: #6366f1;
   --brand-green: #10b981;
+  --features-bg: #1e1e2d;  /* Darker shade for dark mode */
 }
 
 body {
@@ -52,6 +56,12 @@ body {
 .bg-accent {
   background: var(--bg-accent);
 }
+.bg-stats {
+  background: var(--bg-stats);
+}
+.bg-features {
+  background: var(--features-bg);
+}
 .border-main {
   border-color: var(--border);
 }
@@ -61,16 +71,20 @@ body {
 
 /* Glassmorphism utility for navbar */
 .glass-navbar {
-  background: rgba(36, 41, 54, 0.7); /* fallback for dark */
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.35); /* more transparent, true glass look for light mode */
+  box-shadow: 0 4px 24px 0 rgba(60,60,60,0.08);
+  border-bottom: 1px solid rgba(180, 180, 200, 0.18);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
 }
 :root .glass-navbar {
-  background: rgba(255,255,255,0.7); /* fallback for light */
+  background: rgba(255,255,255,0.35);
 }
 .dark .glass-navbar {
   background: rgba(36, 41, 54, 0.7);
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+  border-bottom: 1px solid rgba(36, 41, 54, 0.38);
 }
 
 /* Smooth theme transitions */

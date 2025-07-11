@@ -1,0 +1,11 @@
+{
+  "network": "sepolia",
+  "timestamp": "2025-07-11T22:43:22.283Z",
+  "contracts": {
+    "BallotToken": "0x3EEB7294a62FC42B06426d9845019A5745b3468a",
+    "BallotDAO": "0x62dad9dC23694386a9A32cbb4A36F392C03CAc2C",
+    "DAOTreasury": "0x90cFA6e31e40B4863739E80d8C7Da8C25216E4FF"
+  },
+  "deployer": "0x175de8Fa4123d9f4C5B808e07A59f427e412393e",
+  "deploymentBlock": 8743843
+}

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CreateProposalModal from '../components/CreateProposalModal'
 import { useWallet } from '../web3/hooks'
-import Footer from '../components/Footer'
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -126,7 +125,6 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <Footer />
       </div>
     </>
   )
