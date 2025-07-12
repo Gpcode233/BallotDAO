@@ -1,26 +1,30 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { NETWORKS } from './contracts';
 
-// Convert our network config to RainbowKit format
-const getRainbowKitChains = () => {
-  return Object.values(NETWORKS).map(network => ({
-    id: network.chainId,
-    name: network.name,
-    network: network.name.toLowerCase().replace(/\s+/g, '-'),
-    nativeCurrency: network.nativeCurrency || {
+// Default chain configuration that will be dynamically updated by the wallet
+const defaultChains = [
+  {
+    id: 1,
+    name: 'Ethereum',
+    network: 'ethereum',
+    nativeCurrency: {
       name: 'Ethereum',
       symbol: 'ETH',
       decimals: 18,
     },
     rpcUrls: {
-      default: { http: [network.rpcUrl] },
-      public: { http: [network.rpcUrl] },
+      default: { http: ['https://cloudflare-eth.com'] },
+      public: { http: ['https://cloudflare-eth.com'] },
     },
-    testnet: network.chainId !== 1, // Assume anything not mainnet is testnet
-    blockExplorers: network.blockExplorerUrls ? {
-      default: { name: 'Explorer', url: network.explorerUrl },
-    } : undefined,
-  }));
+    testnet: false,
+    blockExplorers: {
+      default: { name: 'Etherscan', url: 'https://etherscan.io' },
+    },
+  },
+];
+
+// This will be populated dynamically by the wallet
+const getRainbowKitChains = () => {
+  return defaultChains;
 };
 
 // Get project ID from environment variable or use a default one for demo

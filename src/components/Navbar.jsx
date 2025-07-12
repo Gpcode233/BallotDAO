@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
-import NetworkSwitcher from './NetworkSwitcher';
 import { Classic } from '@theme-toggles/react';
 import '@theme-toggles/react/css/Classic.css';
 
@@ -96,37 +95,34 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Theme Toggle + Network + Connect Wallet Right */}
+          {/* Theme Toggle and Connect Wallet */}
           <div className="hidden sm:flex sm:items-center space-x-3">
             {/* Theme Toggle */}
             <button
-              type="button"
               onClick={toggleTheme}
-              className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors ${darkMode ? 'bg-indigo-600' : 'bg-gray-200'}`}
-              aria-pressed={darkMode}
-              aria-label="Toggle theme"
+              className={`${themeToggleClasses} ${darkMode ? 'bg-indigo-600' : 'bg-gray-300'}`}
+              aria-label="Toggle dark mode"
             >
               <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-200 ease-in-out ${darkMode ? 'translate-x-6' : 'translate-x-1'}`}
+                className={`${themeToggleThumbClasses} ${darkMode ? 'translate-x-6' : 'translate-x-1'}`}
               >
-                {darkMode ? (
-                  <span className="absolute inset-0 flex h-full w-full items-center justify-center text-yellow-300">
-                    <i className="fas fa-moon text-xs"></i>
-                  </span>
-                ) : (
-                  <span className="absolute inset-0 flex h-full w-full items-center justify-center text-yellow-500">
-                    <i className="fas fa-sun text-xs"></i>
-                  </span>
-                )}
+                <Classic
+                  toggled={darkMode}
+                  toggle={toggleTheme}
+                  className="h-4 w-4 text-gray-700 dark:text-gray-200"
+                />
               </span>
             </button>
-            
-            {/* Network Switcher */}
-            <NetworkSwitcher />
-            
+
             {/* Connect Wallet Button */}
-            <div className="connect-wallet-btn">
-              <ConnectButton />
+            <div className="flex items-center">
+              <ConnectButton
+                label="Connect Wallet"
+                accountStatus="address"
+                showBalance={false}
+                chainStatus="none"
+                className="connect-wallet-btn"
+              />
             </div>
           </div>
 

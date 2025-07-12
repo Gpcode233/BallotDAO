@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useWallet, NETWORKS } from '../web3/hooks';
+import { useWallet } from '../web3/hooks';
 
 const Profile = () => {
   const navigate = useNavigate();
   const { isConnected, address, balance, isSupportedNetwork, currentNetwork, switchChain } = useWallet();
   
-  const supportedNetworks = Object.values(NETWORKS).map(network => network.name).join(' or ');
+  const supportedNetworks = 'Ethereum or any EVM-compatible network';
 
   useEffect(() => {
     if (!isConnected) {

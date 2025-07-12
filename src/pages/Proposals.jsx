@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useReadContract } from 'wagmi';
 import { useVote } from '../web3/hooks';
+import { getContractAddresses } from '../web3/contracts';
 import { useToast } from '../contexts/ToastContext';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
@@ -17,6 +18,98 @@ function Proposals() {
   const [votedProposals, setVotedProposals] = useState({});
   const [selectedProposal, setSelectedProposal] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [proposals, setProposals] = useState([]);
+  
+  // Fetch proposals from the smart contract
+  const { data: proposalCount, error: countError } = useReadContract({
+    address: getContractAddresses().BALLOT_DAO,
+    abi: [{
+      "inputs": [],
+      "name": "proposalCount",
+      "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+      "stateMutability": "view",
+      "type": "function"
+    }],
+    functionName: 'proposalCount',
+  });
+  
+  // Fetch each proposal's details
+  const proposalQueries = [];
+  const proposalCountNum = proposalCount ? parseInt(proposalCount.toString()) : 0;
+  
+  for (let i = 1; i <= proposalCountNum; i++) {
+    const { data: proposal, error } = useReadContract({
+      address: getContractAddresses().BALLOT_DAO,
+      abi: [{
+        "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+        "name": "proposals",
+        "outputs": [
+          {"internalType": "uint256", "name": "id", "type": "uint256"},
+          {"internalType": "string", "name": "title", "type": "string"},
+          {"internalType": "string", "name": "description", "type": "string"},
+          {"internalType": "uint256", "name": "yesVotes", "type": "uint256"},
+          {"internalType": "uint256", "name": "noVotes", "type": "uint256"},
+          {"internalType": "uint256", "name": "endTime", "type": "uint256"},
+          {"internalType": "bool", "name": "executed", "type": "bool"}
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }],
+      functionName: 'proposals',
+      args: [i],
+    });
+    
+    proposalQueries.push({ data: proposal, error });
+  }
+  
+  // Process proposals when data is loaded
+  useEffect(() => {
+    if (proposalCountNum > 0 && proposalQueries.length === proposalCountNum) {
+      const loadedProposals = [];
+      let hasError = false;
+      
+      for (let i = 0; i < proposalQueries.length; i++) {
+        const { data: proposal, error } = proposalQueries[i];
+        
+        if (error) {
+          console.error(`Error loading proposal ${i + 1}:`, error);
+          hasError = true;
+          continue;
+        }
+        
+        if (proposal) {
+          const totalVotes = proposal.yesVotes + proposal.noVotes;
+          const yesPercentage = totalVotes > 0 ? Math.round((proposal.yesVotes / totalVotes) * 100) : 0;
+          const noPercentage = totalVotes > 0 ? 100 - yesPercentage : 0;
+          
+          loadedProposals.push({
+            id: proposal.id.toString(),
+            title: proposal.title,
+            description: proposal.description,
+            yesVotes: proposal.yesVotes,
+            noVotes: proposal.noVotes,
+            endTime: proposal.endTime,
+            executed: proposal.executed,
+            yesPercentage,
+            noPercentage,
+            totalVotes: totalVotes.toString(),
+          });
+        }
+      }
+      
+      if (!hasError || loadedProposals.length > 0) {
+        setProposals(loadedProposals);
+      }
+      
+      setLoading(false);
+    }
+  }, [proposalCount, proposalQueries.length]);
+  
+  if (countError) {
+    console.error('Error loading proposal count:', countError);
+    addToast('Failed to load proposals. Please try again later.', 'error');
+  }
 
   // Load voted proposals from localStorage on component mount
   useEffect(() => {
@@ -94,106 +187,29 @@ function Proposals() {
 
   // Fixed voting price in ETH (0.20 USDC equivalent, assuming 1 ETH = 2000 USDC for this example)
   const VOTE_PRICE_ETH = parseEther('0.0001');
+  
+  // Get the voting price from the useVote hook
+  const { votingPrice } = useVote();
 
-  // Sample data - replace with actual data from your smart contract
-  const allProposals = [
-    {
-      id: 1,
-      title: "DAO Treasury Allocation Proposal",
-      votePrice: VOTE_PRICE_ETH,
-      description: "This proposal suggests a new allocation strategy for the DAO treasury. The proposed allocation is 40% for development, 30% for marketing, and 30% for community rewards. This change aims to balance long-term growth with immediate community incentives while ensuring sustainable development of the platform. The new allocation would take effect in the next funding cycle if approved.",
-      endDate: "July 15, 2023",
-      status: "Open",
-      proposer: "0x1a2b...3c4d",
-      yesVotes: 130,
-      noVotes: 70,
-      yesPercentage: 65,
-      noPercentage: 35,
-      buttonText: "View Details",
-      buttonClass: "bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white", // Grey button
-      iconClass: "fas fa-eye"
-    },
-    {
-      id: 2,
-      title: "Protocol Upgrade v2.0",
-      votePrice: VOTE_PRICE_ETH,
-      description: "This major protocol upgrade introduces several new features including batch transactions, gas optimizations, and improved security measures. The upgrade will be backward compatible but requires a hard fork. The changes have been audited by three independent security firms. The estimated gas savings are around 30% for common operations. The upgrade is scheduled for August 1st if approved by the community.",
-      endDate: "July 18, 2023",
-      status: "Open",
-      proposer: "vitalik.eth",
-      yesVotes: 84,
-      noVotes: 116,
-      yesPercentage: 42,
-      noPercentage: 58,
-      buttonText: "View Details",
-      buttonClass: "bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white", // Grey button
-      iconClass: "fas fa-eye"
-    },
-    {
-      id: 3,
-      title: "New Core Team Member",
-      votePrice: VOTE_PRICE_ETH,
-      description: "This proposal is to onboard @cryptodev as a new core team member responsible for smart contract development. @cryptodev has been a contributor for 6 months, has submitted 3 successful proposals, and has a strong background in Solidity and DeFi. The role includes maintaining core contracts, implementing upgrades, and participating in code reviews. The position comes with a compensation of 50,000 BALLOT tokens vested over 2 years.",
-      endDate: "July 12, 2023",
-      status: "Open",
-      proposer: "0x5e6f...7g8h",
-      yesVotes: 156,
-      noVotes: 44,
-      yesPercentage: 78,
-      noPercentage: 22,
-      buttonText: "View Details",
-      buttonClass: "bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white", // Grey button
-      iconClass: "fas fa-eye"
-    },
-    {
-      id: 4,
-      title: "Tokenomics Update",
-      votePrice: VOTE_PRICE_ETH,
-      description: "This proposal suggests a comprehensive update to the tokenomics model to improve long-term sustainability. Key changes include: 1) Reducing inflation rate from 10% to 5% annually, 2) Introducing a token burn mechanism for 25% of protocol fees, 3) Extending the vesting schedule for team tokens by 1 year, and 4) Allocating 15% of the treasury to a community grants program. The changes aim to create better token velocity and long-term value accrual.",
-      endDate: "Starts July 14, 2023",
-      status: "Pending",
-      proposer: "tokenmaster.eth",
-      yesVotes: 0,
-      noVotes: 0,
-      yesPercentage: 0,
-      noPercentage: 0,
-      buttonText: "Coming Soon",
-      buttonClass: "bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white", // Grey button
-      iconClass: "fas fa-clock"
-    },
-    {
-      id: 5,
-      title: "Partnership with DeFi Protocol",
-      votePrice: VOTE_PRICE_ETH,
-      description: "This approved proposal established a strategic partnership with a leading DeFi protocol to enhance liquidity and cross-platform functionality. The partnership includes: 1) A $5M liquidity mining program, 2) Joint development of cross-chain features, 3) Shared security resources, and 4) Co-marketing initiatives. The partnership has already resulted in a 45% increase in TVL and 30% more unique users in the first month.",
-      endDate: "Ended July 6, 2023",
-      status: "Closed",
-      proposer: "0x9i8j...7k6l",
-      yesVotes: 246,
-      noVotes: 54,
-      yesPercentage: 82,
-      noPercentage: 18,
-      buttonText: "View Results",
-      buttonClass: "bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white", // Grey button
-      iconClass: "fas fa-poll"
-    },
-    {
-      id: 6,
-      title: "UI/UX Redesign Initiative",
-      votePrice: VOTE_PRICE_ETH,
-      description: "This proposal to allocate $250,000 for a complete UI/UX redesign was rejected by the community. The redesign would have included a new design system, improved mobile experience, and enhanced accessibility features. Community feedback indicated that the proposed budget was too high and the scope too broad. The design team plans to return with a more focused proposal that addresses specific pain points identified in user testing.",
-      endDate: "Ended June 27, 2023",
-      status: "Closed",
-      proposer: "designer.eth",
-      yesVotes: 70,
-      noVotes: 130,
-      yesPercentage: 35,
-      noPercentage: 65,
-      buttonText: "View Results",
-      buttonClass: "bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white", // Grey button
-      iconClass: "fas fa-poll"
-    }
-  ];
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <FontAwesomeIcon icon={faSpinner} spin className="text-4xl text-indigo-600 mb-4" />
+        <p className="text-lg text-gray-600">Loading proposals...</p>
+      </div>
+    );
+  }
+  
+  if (proposals.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white">No proposals found</h3>
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          There are no active proposals at the moment. Check back later or create a new proposal.
+        </p>
+      </div>
+    );
+  }
 
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All Proposals');
@@ -240,6 +256,7 @@ function Proposals() {
           onVote={handleModalVote}
           isVoting={isVoting}
           hasVoted={votedProposals[selectedProposal?.id]}
+          votingPrice={votingPrice || VOTE_PRICE_ETH}
         />
       )}
       <div className="min-h-screen bg-main text-main">

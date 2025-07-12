@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CreateProposalModal from '../components/CreateProposalModal'
-import { useWallet, NETWORKS } from '../web3/hooks'
+import { useWallet } from '../web3/hooks'
 
 const Dashboard = () => {
   const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { isConnected, isSupportedNetwork, currentNetwork, switchChain } = useWallet()
-  
-  const supportedNetworks = Object.values(NETWORKS).map(network => network.name).join(' or ')
+  const { isConnected } = useWallet()
 
   // Redirect to home if wallet is not connected
   useEffect(() => {
@@ -33,36 +31,6 @@ const Dashboard = () => {
             <span className="mr-2 text-4xl" style={{ color: 'var(--brand-indigo)' }}><i className="fas fa-tachometer-alt" /></span> Dashboard
           </h1>
           
-          {/* Network Warning */}
-          {!isSupportedNetwork && (
-            <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-6 flex items-center">
-              <i className="fas fa-exclamation-triangle text-yellow-400 text-2xl mr-4"></i>
-              <div>
-                <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                  {currentNetwork ? 'Unsupported Network' : 'No Network Connected'}
-                </h3>
-                <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-100">
-                  <p>
-                    {currentNetwork 
-                      ? `You're connected to ${currentNetwork.name || 'an unsupported network'}. `
-                      : 'Please connect to a supported network. '}
-                    Please switch to {supportedNetworks} to use BallotDAO.
-                  </p>
-                </div>
-                {Object.values(NETWORKS).map(network => (
-                  <div key={network.id} className="mt-2">
-                    <button
-                      onClick={() => switchChain({ chainId: network.id })}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium transition mr-2"
-                    >
-                      Switch to {network.name}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           <div className="grid md:grid-cols-2 gap-8">
             {/* Create New Proposal */}
             <div className="bg-card rounded-xl p-8 flex flex-col items-center border border-main shadow-main">
@@ -78,7 +46,6 @@ const Dashboard = () => {
               <button
                 className="bg-[var(--brand-indigo)] hover:bg-[var(--brand-green)] text-white px-6 py-2 rounded-md font-medium transition shadow-sm"
                 onClick={() => setIsModalOpen(true)}
-                disabled={!isSupportedNetwork}
               >
                 Create Proposal
               </button>

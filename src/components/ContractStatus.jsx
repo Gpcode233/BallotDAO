@@ -1,9 +1,10 @@
 import React from 'react';
 import { useWallet, useTokenBalance, useProposals } from '../web3/hooks';
-import { CONTRACT_ADDRESSES } from '../web3/contracts';
+import { getContractAddresses } from '../web3/contracts';
 
 function ContractStatus() {
   const { address, isConnected, isCorrectNetwork } = useWallet();
+  const contractAddresses = getContractAddresses();
   const { data: tokenBalance, isLoading: balanceLoading } = useTokenBalance(address);
   const { data: proposalCount, isLoading: proposalsLoading } = useProposals();
 
@@ -61,9 +62,9 @@ function ContractStatus() {
       <div className="mt-4 pt-4 border-t border-accent">
         <h4 className="text-sm font-medium text-main mb-2">Contract Addresses:</h4>
         <div className="space-y-1 text-xs text-muted">
-          <div>BallotToken: {shortenAddress(CONTRACT_ADDRESSES.BALLOT_TOKEN)}</div>
-          <div>BallotDAO: {shortenAddress(CONTRACT_ADDRESSES.BALLOT_DAO)}</div>
-          <div>DAOTreasury: {shortenAddress(CONTRACT_ADDRESSES.DAO_TREASURY)}</div>
+          <div>BallotToken: {shortenAddress(contractAddresses.BALLOT_TOKEN)}</div>
+          <div>BallotDAO: {shortenAddress(contractAddresses.BALLOT_DAO)}</div>
+          <div>DAOTreasury: {shortenAddress(contractAddresses.DAO_TREASURY)}</div>
         </div>
       </div>
     </div>

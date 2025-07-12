@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faTimes, faSpinner, faCoins, faClock } from '@fortawesome/free-solid-svg-icons';
-import { formatEther } from 'ethers';
+import { formatEther, parseEther } from 'ethers';
+import { useAccount } from 'wagmi';
 
 // Helper function to format time remaining
 const formatTimeRemaining = (endTime) => {
@@ -51,7 +52,25 @@ const formatEthValue = (weiValue) => {
   }
 };
 
-const VoteModal = ({ isOpen, onClose, proposal, onVote, isVoting, hasVoted }) => {
+const VoteModal = ({ isOpen, onClose, proposal, onVote, isVoting, hasVoted, votingPrice }) => {
+  const { address } = useAccount();
+  const [formattedPrice, setFormattedPrice] = useState('0.000000');
+  
+  // Format the voting price when it changes
+  useEffect(() => {
+    if (votingPrice) {
+      try {
+        // If votingPrice is a string, parse it to a BigNumber first
+        const priceValue = typeof votingPrice === 'string' 
+          ? parseEther(votingPrice) 
+          : votingPrice;
+        setFormattedPrice(formatEthValue(priceValue));
+      } catch (error) {
+        console.error('Error formatting voting price:', error);
+        setFormattedPrice('0.000000');
+      }
+    }
+  }, [votingPrice]);
   const [selectedVote, setSelectedVote] = useState(null);
   const [timeLeft, setTimeLeft] = useState('');
 
@@ -117,9 +136,9 @@ const VoteModal = ({ isOpen, onClose, proposal, onVote, isVoting, hasVoted }) =>
                 <div className="flex items-center">
                   <FontAwesomeIcon icon={faCoins} className="w-3 h-3 mr-1 text-indigo-600 dark:text-indigo-400" />
                   <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
-                    {formatEthValue(proposal.votePrice)} ETH
+                    {formattedPrice} ETH
                   </span>
-                  <span className="ml-2 text-xs text-gray-500">(~$0.20)</span>
+                  <span className="ml-2 text-xs text-gray-500">(~${(parseFloat(formattedPrice) * 2000).toFixed(2)})</span>
                 </div>
               </div>
             </div>

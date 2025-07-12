@@ -1,57 +1,28 @@
 import { useState, useEffect } from 'react';
-import { useAccount, useChainId, useReadContract, useWriteContract, useReadContracts, useSwitchChain } from 'wagmi';
+import { useAccount, useChainId, useReadContract, useWriteContract, useReadContracts } from 'wagmi';
 import { parseEther } from 'ethers';
-import { CONTRACT_ADDRESSES, CONTRACT_ABIS, getContractAddresses, getNetworkConfig, NETWORKS as ALL_NETWORKS } from './contracts';
+import { CONTRACT_ABIS, getContractAddresses, getNetworkConfig } from './contracts';
 
 // Fixed voting price in ETH (0.20 USDC equivalent)
 const VOTE_PRICE_ETH = parseEther('0.0001'); // 0.0001 ETH = ~0.20 USDC (adjust based on current ETH price)
 
-// Supported networks (imported from contracts.js)
-export const NETWORKS = {
-  hardhat: ALL_NETWORKS.hardhat,
-  sepolia: ALL_NETWORKS.sepolia
-};
-
 // Custom hook for wallet connection state
 export const useWallet = () => {
   const { address, isConnected, isConnecting, isDisconnected, chainId } = useAccount();
-  const { switchChain } = useSwitchChain();
   const [currentNetwork, setCurrentNetwork] = useState(null);
-  const [isSupportedNetwork, setIsSupportedNetwork] = useState(false);
+  const [isSupportedNetwork, setIsSupportedNetwork] = useState(true); // All networks are supported now
 
   // Set current network based on chainId
   useEffect(() => {
     if (!chainId) {
       setCurrentNetwork(null);
-      setIsSupportedNetwork(false);
       return;
     }
 
-    // Find the network in our supported networks
-    const network = Object.values(NETWORKS).find(net => net.id === chainId);
-    
-    if (network) {
-      setCurrentNetwork(network);
-      setIsSupportedNetwork(true);
-    } else {
-      // If not in our supported networks, try to get the network info from wagmi
-      setCurrentNetwork({
-        id: chainId,
-        name: `Chain ${chainId}`,
-        unsupported: true
-      });
-      setIsSupportedNetwork(false);
-    }
-  }, [chainId]);
-  useEffect(() => {
-    if (chainId) {
-      const network = Object.values(NETWORKS).find(net => net.id === chainId);
-      setCurrentNetwork(network || null);
-      setIsSupportedNetwork(!!network);
-    } else {
-      setCurrentNetwork(null);
-      setIsSupportedNetwork(false);
-    }
+    // For any chain, create a basic network configuration
+    const network = getNetworkConfig(chainId);
+    setCurrentNetwork(network);
+    setIsSupportedNetwork(true);
   }, [chainId]);
 
   // Switch to a specific network
@@ -174,35 +145,67 @@ export const useCreateProposal = () => {
 
 // Hook for voting on a proposal with enhanced UX
 export const useVote = () => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const [isVoting, setIsVoting] = useState(false);
   const [error, setError] = useState(null);
   
   const { data: tokenBalance } = useTokenBalance(address);
-  const { writeAsync: castVoteAsync } = useWriteContract({
-    address: CONTRACT_ADDRESSES.ballot,
-    abi: CONTRACT_ABIS.ballot,
-    functionName: 'vote',
-  });
+  
+  // Get contract addresses for the current network
+  const contractAddresses = getContractAddresses();
+  
+  const { writeContractAsync } = useWriteContract();
 
   const vote = async (proposalId, support) => {
+    if (!address) {
+      return { success: false, error: 'Wallet not connected' };
+    }
+    
+    if (!contractAddresses.BALLOT_DAO) {
+      return { success: false, error: 'Contract address not found for this network' };
+    }
+    
+    setIsVoting(true);
+    setError(null);
+    
     try {
-      const result = await castVoteAsync({
-        args: [proposalId, support],
+      const tx = await writeContractAsync({
+        address: contractAddresses.BALLOT_DAO,
+        abi: CONTRACT_ABIS.BALLOT_DAO,
+        functionName: 'vote',
+        args: [parseInt(proposalId), support],
         value: VOTE_PRICE_ETH, // Send the fixed voting price with the transaction
       });
-      return { success: true, txHash: result.hash, cost: VOTE_PRICE_ETH };
+      
+      return { 
+        success: true, 
+        txHash: tx.hash, 
+        cost: VOTE_PRICE_ETH,
+        message: 'Vote submitted successfully!'
+      };
     } catch (error) {
       console.error('Voting error:', error);
-      setError(error.message.includes('rejected') 
+      const errorMessage = error.message.includes('user rejected') 
         ? 'Transaction was rejected' 
-        : 'Error processing your vote. Please try again.'
-      );
-      return { success: false, error: error.message };
+        : error.message.includes('insufficient funds')
+          ? 'Insufficient funds for voting fee'
+          : 'Error processing your vote. Please try again.';
+          
+      setError(errorMessage);
+      return { 
+        success: false, 
+        error: errorMessage,
+        code: error.code
+      };
     } finally {
       setIsVoting(false);
     }
   };
 
-  return { vote, isVoting, error };
+  return { 
+    vote, 
+    isVoting, 
+    error,
+    votingPrice: VOTE_PRICE_ETH
+  };
 };

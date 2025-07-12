@@ -2,11 +2,11 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNetworkWired, faBolt, faLeaf, faProjectDiagram, faQuoteRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useWallet, NETWORKS } from '../web3/hooks';
+import { useWallet } from '../web3/hooks';
 
 const About = () => {
   const { isConnected } = useWallet();
-  const supportedNetworks = Object.values(NETWORKS).map(network => network.name).join(' and ');
+  const supportedNetworks = 'Ethereum and other EVM-compatible networks';
   return (
     <div className="bg-main text-main">
       {/* Hero Section */}
