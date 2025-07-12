@@ -1,54 +1,47 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { sepolia } from 'wagmi/chains';
+import { NETWORKS } from './contracts';
 
-// Configure testnet chains
-export const chains = [
-  {
-    ...sepolia,
-    // Override any default Sepolia settings if needed
-    rpcUrls: {
-      ...sepolia.rpcUrls,
-      // Use Alchemy RPC URL for better reliability
-      default: { http: [process.env.REACT_APP_SEPOLIA_RPC_URL || 'https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_API_KEY'] },
-      public: { http: [process.env.REACT_APP_SEPOLIA_RPC_URL || 'https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_API_KEY'] },
-    },
-  },
-  // Keep Hardhat for local development
-  {
-    id: 31337,
-    name: 'Hardhat Local',
-    network: 'hardhat',
-    nativeCurrency: {
+// Convert our network config to RainbowKit format
+const getRainbowKitChains = () => {
+  return Object.values(NETWORKS).map(network => ({
+    id: network.chainId,
+    name: network.name,
+    network: network.name.toLowerCase().replace(/\s+/g, '-'),
+    nativeCurrency: network.nativeCurrency || {
       name: 'Ethereum',
       symbol: 'ETH',
       decimals: 18,
     },
     rpcUrls: {
-      default: { http: ['http://127.0.0.1:8545'] },
-      public: { http: ['http://127.0.0.1:8545'] },
+      default: { http: [network.rpcUrl] },
+      public: { http: [network.rpcUrl] },
     },
-    testnet: true,
-  }
-];
+    testnet: network.chainId !== 1, // Assume anything not mainnet is testnet
+    blockExplorers: network.blockExplorerUrls ? {
+      default: { name: 'Explorer', url: network.explorerUrl },
+    } : undefined,
+  }));
+};
 
 // Get project ID from environment variable or use a default one for demo
-const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID || 'YOUR_WALLETCONNECT_PROJECT_ID';
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_WALLETCONNECT_PROJECT_ID';
+
+// Get the app URL from environment variables or use a default
+const appUrl = import.meta.env.VITE_APP_URL || 'http://localhost:3000';
 
 export const config = getDefaultConfig({
   appName: 'BallotDAO',
   projectId: projectId,
-  chains: chains,
-  ssr: false,
+  chains: getRainbowKitChains(),
+  ssr: false, // Disable server-side rendering for now
   // Optional: Customize wallet options
   walletConnectOptions: {
     projectId: projectId,
     metadata: {
       name: 'BallotDAO',
       description: 'Decentralized Voting Platform',
-      url: 'https://your-dapp-url.com',
-      icons: ['https://your-dapp-url.com/logo.png']
+      url: appUrl,
+      icons: [`${appUrl}/logo.png`]
     }
   },
 });
-
-// Export is already handled in the config object

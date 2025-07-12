@@ -19,7 +19,7 @@ const NetworkSwitcher = () => {
 
   const handleNetworkChange = async (network) => {
     try {
-      await switchNetwork(network.id);
+      await switchChain({ chainId: network.id });
       setIsOpen(false);
     } catch (error) {
       console.error('Failed to switch network:', error);

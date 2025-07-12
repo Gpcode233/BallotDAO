@@ -7,19 +7,35 @@ import { formatEther } from 'ethers';
 const formatTimeRemaining = (endTime) => {
   if (!endTime) return 'N/A';
   
-  const now = Math.floor(Date.now() / 1000); // Current time in seconds
-  const end = typeof endTime === 'number' ? endTime : endTime.toNumber();
-  const diff = end - now;
-  
-  if (diff <= 0) return 'Voting ended';
-  
-  const days = Math.floor(diff / (60 * 60 * 24));
-  const hours = Math.floor((diff % (60 * 60 * 24)) / (60 * 60));
-  const minutes = Math.floor((diff % (60 * 60)) / 60);
-  
-  if (days > 0) return `${days} day${days > 1 ? 's' : ''} left`;
-  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} left`;
-  return `${minutes} minute${minutes !== 1 ? 's' : ''} left`;
+  try {
+    const now = Math.floor(Date.now() / 1000); // Current time in seconds
+    // Handle different types of endTime (number, string, or BigNumber)
+    let end;
+    if (typeof endTime === 'number') {
+      end = endTime;
+    } else if (typeof endTime === 'string') {
+      end = parseInt(endTime, 10);
+    } else if (endTime && typeof endTime.toNumber === 'function') {
+      end = endTime.toNumber();
+    } else {
+      return 'Invalid end time';
+    }
+    
+    const diff = end - now;
+    
+    if (diff <= 0) return 'Voting ended';
+    
+    const days = Math.floor(diff / (60 * 60 * 24));
+    const hours = Math.floor((diff % (60 * 60 * 24)) / (60 * 60));
+    const minutes = Math.floor((diff % (60 * 60)) / 60);
+    
+    if (days > 0) return `${days} day${days > 1 ? 's' : ''} left`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} left`;
+    return `${minutes} minute${minutes !== 1 ? 's' : ''} left`;
+  } catch (error) {
+    console.error('Error calculating time remaining:', error);
+    return 'Error';
+  }
 };
 
 // Helper function to format ETH value with 6 decimal places
@@ -61,7 +77,7 @@ const VoteModal = ({ isOpen, onClose, proposal, onVote, isVoting, hasVoted }) =>
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}

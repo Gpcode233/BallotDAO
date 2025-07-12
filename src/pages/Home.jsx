@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { Link } from 'react-router-dom';
 import voteBoxImage from '../assets/3d-blue-vote-box-ballot-600nw-2402267639-removebg-preview.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faCodeBranch, faUserPlus, faVoteYea } from '@fortawesome/free-solid-svg-icons';
@@ -124,12 +125,12 @@ function Home() {
                     </button>
                   </div>
                   <div className="mt-3 sm:mt-0 sm:ml-3">
-                    <a
-                      href="/about"
+                    <Link
+                      to="/about"
                       className="w-full flex items-center justify-center px-8 py-3 border border-main text-base font-medium rounded-md text-main bg-transparent hover:bg-accent hover:border-[var(--brand-indigo)] transform transition-all duration-300 md:py-4 md:text-lg md:px-10"
                     >
                       Learn More
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>

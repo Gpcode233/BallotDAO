@@ -1,10 +1,12 @@
 import React from 'react';
-import umiImage from '../assets/umi.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNetworkWired, faBolt, faLeaf, faProjectDiagram, faQuoteRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useWallet, NETWORKS } from '../web3/hooks';
 
 const About = () => {
+  const { isConnected } = useWallet();
+  const supportedNetworks = Object.values(NETWORKS).map(network => network.name).join(' and ');
   return (
     <div className="bg-main text-main">
       {/* Hero Section */}
@@ -52,7 +54,9 @@ const About = () => {
                     Studies show that <span className="font-medium" style={{ color: 'var(--brand-indigo)' }}>30% of eligible voters</span> don't participate due to these systemic issues.
                   </p>
                   <p className="text-muted mb-4">
-                    BallotDAO leverages blockchain technology to create tamper-proof, verifiable voting systems that are accessible to anyone with an internet connection.
+                    BallotDAO is built on {supportedNetworks}, high-performance blockchain networks that ensure fast,
+                    secure, and low-cost transactions. Our platform leverages the power of
+                    decentralized technology to create a truly democratic voting experience.
                   </p>
                 </div>
                 <div className="mt-8 md:mt-0 md:w-1/2 md:pl-10">
@@ -95,10 +99,12 @@ const About = () => {
             <div className="flex flex-col md:flex-row items-center">
               <div className="md:w-1/2">
                 <div className="flex items-center">
-                  <img src={umiImage} alt="Umi Logo" className="h-16 w-16 rounded-full object-cover" />
+                  <div className="h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                    <FontAwesomeIcon icon={faNetworkWired} className="h-8 w-8 text-indigo-600 dark:text-indigo-300" />
+                  </div>
                   <div className="ml-4">
-                    <h3 className="text-2xl font-bold" style={{ color: 'var(--brand-indigo)' }}>Umi Network</h3>
-                    <p className="text-muted">Sub-second finality • EVM compatible • Carbon neutral</p>
+                    <h3 className="text-2xl font-bold" style={{ color: 'var(--brand-indigo)' }}>Blockchain Powered</h3>
+                    <p className="text-muted">Secure • Transparent • Decentralized</p>
                   </div>
                 </div>
                 <div className="mt-8 space-y-6">

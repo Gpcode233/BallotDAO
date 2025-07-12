@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useWallet } from '../web3/hooks';
+import { useWallet, NETWORKS } from '../web3/hooks';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { isConnected, address, balance, isCorrectNetwork } = useWallet();
+  const { isConnected, address, balance, isSupportedNetwork, currentNetwork, switchChain } = useWallet();
+  
+  const supportedNetworks = Object.values(NETWORKS).map(network => network.name).join(' or ');
 
   useEffect(() => {
     if (!isConnected) {
@@ -38,20 +40,34 @@ const Profile = () => {
           </div>
 
           {/* Network Status */}
-          {!isCorrectNetwork && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <i className="fas fa-exclamation-triangle text-yellow-400"></i>
+          {!isSupportedNetwork && (
+            <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-6">
+              <div className="flex items-start">
+                <div className="flex-shrink-0 pt-0.5">
+                  <i className="fas fa-exclamation-triangle text-yellow-400 text-xl"></i>
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800">
-                    Wrong Network
+                  <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                    {currentNetwork ? 'Unsupported Network' : 'No Network Connected'}
                   </h3>
-                  <div className="mt-2 text-sm text-yellow-700">
+                  <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-100">
                     <p>
-                      Please switch to Umi network to use BallotDAO.
+                      {currentNetwork 
+                        ? `You're connected to ${currentNetwork.name || 'an unsupported network'}. `
+                        : 'Please connect to a supported network. '}
+                      Please switch to {supportedNetworks} to use BallotDAO.
                     </p>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    {Object.values(NETWORKS).map(network => (
+                      <button
+                        key={network.id}
+                        onClick={() => switchChain({ chainId: network.id })}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md text-xs font-medium transition mr-2"
+                      >
+                        Switch to {network.name}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>

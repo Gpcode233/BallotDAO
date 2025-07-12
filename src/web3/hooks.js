@@ -1,43 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useAccount, useChainId, useReadContract, useWriteContract, useReadContracts, useSwitchChain } from 'wagmi';
 import { parseEther } from 'ethers';
-import { CONTRACT_ADDRESSES, CONTRACT_ABIS, getContractAddresses, getNetworkConfig } from './contracts';
+import { CONTRACT_ADDRESSES, CONTRACT_ABIS, getContractAddresses, getNetworkConfig, NETWORKS as ALL_NETWORKS } from './contracts';
 
 // Fixed voting price in ETH (0.20 USDC equivalent)
 const VOTE_PRICE_ETH = parseEther('0.0001'); // 0.0001 ETH = ~0.20 USDC (adjust based on current ETH price)
 
-// Network configurations
+// Supported networks (imported from contracts.js)
 export const NETWORKS = {
-  hardhat: {
-    id: 31337,
-    name: 'Hardhat Local',
-    network: 'hardhat',
-    nativeCurrency: {
-      name: 'Ethereum',
-      symbol: 'ETH',
-      decimals: 18,
-    },
-    rpcUrls: {
-      default: { http: ['http://127.0.0.1:8545'] },
-      public: { http: ['http://127.0.0.1:8545'] },
-    },
-    testnet: true,
-  },
-  sepolia: {
-    id: 11155111,
-    name: 'Sepolia',
-    network: 'sepolia',
-    nativeCurrency: {
-      name: 'Sepolia ETH',
-      symbol: 'ETH',
-      decimals: 18,
-    },
-    rpcUrls: {
-      default: { http: [import.meta.env.VITE_SEPOLIA_RPC_URL || 'https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_API_KEY'] },
-      public: { http: [import.meta.env.VITE_SEPOLIA_RPC_URL || 'https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_API_KEY'] },
-    },
-    testnet: true,
-  },
+  hardhat: ALL_NETWORKS.hardhat,
+  sepolia: ALL_NETWORKS.sepolia
 };
 
 // Custom hook for wallet connection state
@@ -48,6 +20,29 @@ export const useWallet = () => {
   const [isSupportedNetwork, setIsSupportedNetwork] = useState(false);
 
   // Set current network based on chainId
+  useEffect(() => {
+    if (!chainId) {
+      setCurrentNetwork(null);
+      setIsSupportedNetwork(false);
+      return;
+    }
+
+    // Find the network in our supported networks
+    const network = Object.values(NETWORKS).find(net => net.id === chainId);
+    
+    if (network) {
+      setCurrentNetwork(network);
+      setIsSupportedNetwork(true);
+    } else {
+      // If not in our supported networks, try to get the network info from wagmi
+      setCurrentNetwork({
+        id: chainId,
+        name: `Chain ${chainId}`,
+        unsupported: true
+      });
+      setIsSupportedNetwork(false);
+    }
+  }, [chainId]);
   useEffect(() => {
     if (chainId) {
       const network = Object.values(NETWORKS).find(net => net.id === chainId);
