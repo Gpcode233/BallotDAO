@@ -1,7 +1,26 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown, faTimes, faSpinner, faCoins } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown, faTimes, faSpinner, faCoins, faClock } from '@fortawesome/free-solid-svg-icons';
 import { formatEther } from 'ethers';
+
+// Helper function to format time remaining
+const formatTimeRemaining = (endTime) => {
+  if (!endTime) return 'N/A';
+  
+  const now = Math.floor(Date.now() / 1000); // Current time in seconds
+  const end = typeof endTime === 'number' ? endTime : endTime.toNumber();
+  const diff = end - now;
+  
+  if (diff <= 0) return 'Voting ended';
+  
+  const days = Math.floor(diff / (60 * 60 * 24));
+  const hours = Math.floor((diff % (60 * 60 * 24)) / (60 * 60));
+  const minutes = Math.floor((diff % (60 * 60)) / 60);
+  
+  if (days > 0) return `${days} day${days > 1 ? 's' : ''} left`;
+  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} left`;
+  return `${minutes} minute${minutes !== 1 ? 's' : ''} left`;
+};
 
 // Helper function to format ETH value with 6 decimal places
 const formatEthValue = (weiValue) => {
@@ -18,6 +37,21 @@ const formatEthValue = (weiValue) => {
 
 const VoteModal = ({ isOpen, onClose, proposal, onVote, isVoting, hasVoted }) => {
   const [selectedVote, setSelectedVote] = useState(null);
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!isOpen || !proposal?.endTime) return;
+    
+    // Update time left immediately
+    setTimeLeft(formatTimeRemaining(proposal.endTime));
+    
+    // Update time left every minute
+    const timer = setInterval(() => {
+      setTimeLeft(formatTimeRemaining(proposal.endTime));
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(timer);
+  }, [isOpen, proposal?.endTime]);
 
   if (!isOpen) return null;
 
@@ -56,13 +90,16 @@ const VoteModal = ({ isOpen, onClose, proposal, onVote, isVoting, hasVoted }) =>
                 <span className="text-sm text-gray-900 dark:text-white">{proposal.proposer}</span>
               </div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Voting Ends</span>
-                <span className="text-sm text-gray-900 dark:text-white">{proposal.endDate}</span>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Time Remaining</span>
+                <div className="flex items-center text-sm text-gray-900 dark:text-white">
+                  <FontAwesomeIcon icon={faClock} className="w-3 h-3 mr-1 text-indigo-600 dark:text-indigo-400" />
+                  <span>{timeLeft || 'Calculating...'}</span>
+                </div>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Voting Cost</span>
                 <div className="flex items-center">
-                  <FontAwesomeIcon icon={faEthereum} className="w-3 h-3 mr-1 text-indigo-600 dark:text-indigo-400" />
+                  <FontAwesomeIcon icon={faCoins} className="w-3 h-3 mr-1 text-indigo-600 dark:text-indigo-400" />
                   <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
                     {formatEthValue(proposal.votePrice)} ETH
                   </span>
