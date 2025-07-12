@@ -51,4 +51,4 @@ export const config = getDefaultConfig({
   },
 });
 
-export { chains };
+// Export is already handled in the config object

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown, faTimes, faSpinner, faEthereum } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown, faTimes, faSpinner, faCoins } from '@fortawesome/free-solid-svg-icons';
 import { formatEther } from 'ethers';
 
 // Helper function to format ETH value with 6 decimal places
